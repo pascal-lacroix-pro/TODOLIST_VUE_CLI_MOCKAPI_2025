@@ -15,6 +15,12 @@ onMounted(async () => {
   DB.setApiURL(props.apiURL);
   todos.splice(todos.length, 0, ...(await DB.findAll()));
 });
+
+// FONCTIONS CRUD
+const createItem = async (content) => {
+  const todo = await DB.create(content);
+  todos.push(todo);
+};
 </script>
 
 <template>
@@ -26,7 +32,7 @@ onMounted(async () => {
     <h2 id="todo-heading" class="sr-only">Todo list</h2>
 
     <!-- INPUT PRINCIPAL -->
-    <TodoListAddForm />
+    <TodoListAddForm @on-submit-add-form="createItem($event)" />
 
     <!-- LISTE DES TODOS -->
     <ul
