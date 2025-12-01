@@ -17,9 +17,21 @@ onMounted(async () => {
 });
 
 // FONCTIONS CRUD
+// createItem
+// event: on-submit-add-form
 const createItem = async (content) => {
   const todo = await DB.create(content);
   todos.push(todo);
+};
+
+// deleteOneById(id)
+// event: on-delete
+const deleteOneById = async (id) => {
+  await DB.deleteOneById(id);
+  todos.splice(
+    todos.findIndex((todo) => todo.id === id),
+    1
+  );
 };
 </script>
 
@@ -41,7 +53,12 @@ const createItem = async (content) => {
       aria-label="Todos"
     >
       <!-- ITEM (exemple) -->
-      <todo v-for="todo in todos" :key="todo.id" :todo="todo" />
+      <todo
+        v-for="todo in todos"
+        :key="todo.id"
+        :todo="todo"
+        @on-delete="deleteOneById($event)"
+      />
     </ul>
 
     <!-- FOOTER DE LISTE -->
