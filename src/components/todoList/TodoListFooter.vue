@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+const props = defineProps({
+  notCompletedCount: { type: Number, required: true },
+});
+</script>
 <template>
   <!-- FOOTER DE LISTE -->
   <div
@@ -14,7 +18,7 @@
           class="font-medium"
           aria-live="polite"
           aria-atomic="true"
-          >2</span
+          >{{ notCompletedCount }}</span
         >
         items left
       </p>
