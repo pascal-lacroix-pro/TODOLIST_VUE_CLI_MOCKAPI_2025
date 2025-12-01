@@ -1,6 +1,7 @@
 <script setup>
-import { reactive, onMounted, computed } from "vue";
-import DB from "@/services/DB";
+import { onMounted } from "vue";
+import { todosStore } from "@/stores/todos";
+
 import TodoListAddForm from "./TodoListAddForm.vue";
 import TodoListFooter from "./TodoListFooter.vue";
 import Todo from "./Todo.vue";
@@ -9,40 +10,9 @@ const props = defineProps({
   apiURL: { type: String, required: true },
 });
 
-const todos = reactive([]);
-
-const notCompletedCount = computed(
-  () => todos.filter((todo) => !todo.completed).length
-);
-
-// const notCompletedCount = computed(() => {
-//   return todos.filter((todo) => {
-//     return !todo.completed;
-//   }).length;
-// });
-
 onMounted(async () => {
-  DB.setApiURL(props.apiURL);
-  todos.splice(todos.length, 0, ...(await DB.findAll()));
+  todosStore.init(props.apiURL);
 });
-
-// FONCTIONS CRUD
-// createItem
-// event: on-submit-add-form
-const createItem = async (content) => {
-  const todo = await DB.create(content);
-  todos.push(todo);
-};
-
-// deleteOneById(id)
-// event: on-delete
-const deleteOneById = async (id) => {
-  await DB.deleteOneById(id);
-  todos.splice(
-    todos.findIndex((todo) => todo.id === id),
-    1
-  );
-};
 </script>
 
 <template>
@@ -54,7 +24,7 @@ const deleteOneById = async (id) => {
     <h2 id="todo-heading" class="sr-only">Todo list</h2>
 
     <!-- INPUT PRINCIPAL -->
-    <TodoListAddForm @on-submit-add-form="createItem($event)" />
+    <TodoListAddForm @on-submit-add-form="todosStore.createItem($event)" />
 
     <!-- LISTE DES TODOS -->
     <ul
@@ -64,15 +34,15 @@ const deleteOneById = async (id) => {
     >
       <!-- ITEM (exemple) -->
       <todo
-        v-for="todo in todos"
+        v-for="todo in todosStore.todos"
         :key="todo.id"
         :todo="todo"
-        @on-delete="deleteOneById($event)"
+        @on-delete="todosStore.deleteOneById($event)"
       />
     </ul>
 
     <!-- FOOTER DE LISTE -->
-    <TodoListFooter :notCompletedCount="notCompletedCount" />
+    <TodoListFooter :notCompletedCount="todosStore.notCompletedCount" />
   </section>
 </template>
 <style scoped></style>
